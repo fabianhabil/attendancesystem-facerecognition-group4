@@ -6,7 +6,7 @@ pip install requirements.txt
 ## Notes file
 1. image_comparison.py -> ngetes print array aja
 2. main_video.py -> ngetes realtime foto tapi blm record
-3. simple_facerec.py -> class buat facerec realtime video
+3. simple_facerec.py -> class buat realtime video
 
 ## Notes kalo error
 kalo dlibnya error

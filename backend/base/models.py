@@ -8,6 +8,9 @@ class Image(models.Model):
 
 class User(models.Model):
     fullname = models.CharField(max_length=100)
-    created = models.DateTimeField(auto_now_add=True)
+    classes = models.CharField(max_length=50,null = True)
+    semester = models.IntegerField(null = True)
+    age = models.IntegerField(null = True)
     id_image = models.ForeignKey(Image, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
     

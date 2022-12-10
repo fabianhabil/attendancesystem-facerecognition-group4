@@ -1,17 +1,18 @@
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
+import WelcomePage from '../components/Welcome Page/WelcomePage';
+// import dynamic from 'next/dynamic';
 
-const Test = dynamic(() => import('../components/test'), {
-    ssr: false
-});
+// const Webcam = dynamic(() => import('../components/Webcam/Webcam'), {
+//     ssr: false
+// });
 
 const Home = () => {
     return (
         <>
             <Head>
-                <title>tesrt</title>
+                <title>Attendee</title>
             </Head>
-            <Test />
+            <WelcomePage />
         </>
     );
 };

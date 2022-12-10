@@ -1,54 +1,54 @@
-import Head from 'next/head';
 import Webcam from 'react-webcam';
 import { useEffect, useRef } from 'react';
-
 import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as faceMesh from '@mediapipe/face_mesh';
 
-const TestWebcam = () => {
+const WebcamComponent = () => {
     const webcam = useRef(null);
     const canvas = useRef(null);
 
     const runDetection = async () => {
         const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
         const detectorConfig = {
-            runtime: 'mediapipe', // or 'tfjs'
+            runtime: 'mediapipe',
             solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@${faceMesh.VERSION}`,
             maxFaces: 10
         };
-        // create detector
         const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
-        // run detection
         await detect(detector);
     };
 
     const detect = async (detector) => {
         try {
-            if (webcam.current && detector) {
+            if (webcam.current && canvas.current && detector) {
                 const webcamCurrent = webcam.current;
-                // go next step only when the video is completely uploaded.
+                const videoWidth = webcamCurrent.video.videoWidth;
+                const videoHeight = webcamCurrent.video.videoHeight;
+                canvas.current.width = videoWidth;
+                canvas.current.height = videoHeight;
+
                 if (webcamCurrent.video.readyState === 4) {
                     const video = webcamCurrent.video;
                     const predictions = await detector.estimateFaces(video);
-                    console.log(predictions);
                     requestAnimationFrame(() => {
                         draw(predictions);
                     });
+                    console.log(predictions);
                     setTimeout(() => {
                         detect(detector);
-                    }, 1000);
+                    }, 500);
                 } else {
                     setTimeout(() => {
                         detect(detector);
-                    }, 1000);
+                    }, 500);
                 }
             }
         } catch (error) {
             setTimeout(() => {
                 detect(detector);
-            }, 1000);
+            }, 500);
         }
     };
 
@@ -58,9 +58,8 @@ const TestWebcam = () => {
                 const ctx = canvas.current.getContext('2d');
                 if (ctx) {
                     predictions.forEach((prediction) => {
-                        console.log('test');
                         drawBox(ctx, prediction);
-                        drawFaceMesh(ctx, prediction);
+                        // drawFaceMesh(ctx, prediction);
                     });
                 }
             }
@@ -80,14 +79,14 @@ const TestWebcam = () => {
         ctx.stroke();
     };
 
-    const drawFaceMesh = (ctx, prediction) => {
-        prediction.keypoints.forEach((item) => {
-            const x = item.x;
-            const y = item.y;
-            ctx.fillRect(x, y, 2, 2);
-            ctx.fillStyle = '#69ffe1';
-        });
-    };
+    // const drawFaceMesh = (ctx, prediction) => {
+    //     prediction.keypoints.forEach((item) => {
+    //         const x = item.x;
+    //         const y = item.y;
+    //         ctx.fillRect(x, y, 2, 2);
+    //         ctx.fillStyle = '#69ffe1';
+    //     });
+    // };
 
     useEffect(() => {
         runDetection();
@@ -95,9 +94,6 @@ const TestWebcam = () => {
 
     return (
         <>
-            <Head>
-                <title>tugas</title>
-            </Head>
             <Webcam
                 audio={false}
                 ref={webcam}
@@ -118,13 +114,11 @@ const TestWebcam = () => {
                     textAlign: 'center',
                     top: 50,
                     left: 0,
-                    right: 0,
-                    height: 480,
-                    width: 640
+                    right: 0
                 }}
             />
         </>
     );
 };
 
-export default TestWebcam;
+export default WebcamComponent;

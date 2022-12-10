@@ -1,14 +1,19 @@
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 
-import TestingComponent from '../components/test';
+const Test = dynamic(() => import('../components/test'), {
+    ssr: false
+});
 
-export default function Home() {
+const Home = () => {
     return (
         <>
             <Head>
-                <title>semoga cepet beres nitugas</title>
+                <title>tesrt</title>
             </Head>
-            <TestingComponent />
+            <Test />
         </>
     );
-}
+};
+
+export default Home;

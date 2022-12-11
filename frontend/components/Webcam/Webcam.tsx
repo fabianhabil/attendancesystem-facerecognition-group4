@@ -4,6 +4,7 @@ import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as faceMesh from '@mediapipe/face_mesh';
+import type { Face } from '@tensorflow-models/face-landmarks-detection';
 
 const WebcamComponent = () => {
     const webcam = useRef<Webcam>(null);
@@ -20,7 +21,7 @@ const WebcamComponent = () => {
         await detect(detector);
     };
 
-    const detect = async (detector: any) => {
+    const detect = async (detector: faceLandmarksDetection.FaceLandmarksDetector) => {
         try {
             if (webcam.current && canvas.current && detector) {
                 const webcamCurrent = webcam.current as any;
@@ -28,36 +29,34 @@ const WebcamComponent = () => {
                 const videoHeight = webcamCurrent.video.videoHeight;
                 canvas.current.width = videoWidth;
                 canvas.current.height = videoHeight;
-
                 if (webcamCurrent.video.readyState === 4) {
                     const video = webcamCurrent.video;
-                    const predictions = await detector.estimateFaces(video);
+                    const predictions: Face[] = await detector.estimateFaces(video);
                     requestAnimationFrame(() => {
                         draw(predictions);
                     });
-                    console.log(predictions);
                     setTimeout(() => {
                         detect(detector);
-                    }, 500);
+                    }, 200);
                 } else {
                     setTimeout(() => {
                         detect(detector);
-                    }, 500);
+                    }, 200);
                 }
             }
         } catch (error) {
             setTimeout(() => {
                 detect(detector);
-            }, 500);
+            }, 200);
         }
     };
 
-    const draw = (predictions: any) => {
+    const draw = (predictions: Face[]) => {
         try {
             if (canvas.current) {
                 const ctx = canvas.current.getContext('2d');
                 if (ctx) {
-                    predictions.forEach((prediction: any) => {
+                    predictions.forEach((prediction: Face) => {
                         drawBox(ctx, prediction);
                         // drawFaceMesh(ctx, prediction);
                     });
@@ -68,13 +67,14 @@ const WebcamComponent = () => {
         }
     };
 
-    const drawBox = (ctx: any, prediction: any) => {
+    const drawBox = (ctx: CanvasRenderingContext2D, prediction: Face) => {
         const x = prediction.box.xMin;
         const y = prediction.box.yMin;
         const width = prediction.box.width;
         const height = prediction.box.height;
         ctx.beginPath();
         ctx.rect(x, y, width, height);
+        ctx.lineWidth = 4;
         ctx.strokeStyle = 'red';
         ctx.stroke();
     };

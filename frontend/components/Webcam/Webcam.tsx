@@ -6,8 +6,8 @@ import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detec
 import * as faceMesh from '@mediapipe/face_mesh';
 
 const WebcamComponent = () => {
-    const webcam = useRef(null);
-    const canvas = useRef(null);
+    const webcam = useRef<Webcam>(null);
+    const canvas = useRef<HTMLCanvasElement>(null);
 
     const runDetection = async () => {
         const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
@@ -15,15 +15,15 @@ const WebcamComponent = () => {
             runtime: 'mediapipe',
             solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@${faceMesh.VERSION}`,
             maxFaces: 10
-        };
+        } as any;
         const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
         await detect(detector);
     };
 
-    const detect = async (detector) => {
+    const detect = async (detector: any) => {
         try {
             if (webcam.current && canvas.current && detector) {
-                const webcamCurrent = webcam.current;
+                const webcamCurrent = webcam.current as any;
                 const videoWidth = webcamCurrent.video.videoWidth;
                 const videoHeight = webcamCurrent.video.videoHeight;
                 canvas.current.width = videoWidth;
@@ -52,12 +52,12 @@ const WebcamComponent = () => {
         }
     };
 
-    const draw = (predictions) => {
+    const draw = (predictions: any) => {
         try {
             if (canvas.current) {
                 const ctx = canvas.current.getContext('2d');
                 if (ctx) {
-                    predictions.forEach((prediction) => {
+                    predictions.forEach((prediction: any) => {
                         drawBox(ctx, prediction);
                         // drawFaceMesh(ctx, prediction);
                     });
@@ -68,7 +68,7 @@ const WebcamComponent = () => {
         }
     };
 
-    const drawBox = (ctx, prediction) => {
+    const drawBox = (ctx: any, prediction: any) => {
         const x = prediction.box.xMin;
         const y = prediction.box.yMin;
         const width = prediction.box.width;

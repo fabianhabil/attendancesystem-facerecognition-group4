@@ -133,7 +133,7 @@ const LoginPage = () => {
                                         borderRadius: '18px',
                                         height: '50px',
                                         '&:hover': {
-                                            opacity: 0.8
+                                            backgroundColor: 'rgba(132,168,191,0.7)'
                                         }
                                     }}
                                     onClick={() => {

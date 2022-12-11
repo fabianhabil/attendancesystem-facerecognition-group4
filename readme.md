@@ -15,5 +15,5 @@ kalo dlibnya error
 
 # Notes buat frontend
 1. pastikan sudah punya node js di komputer
-2. npm install
+2. npm install --legacy-peer-deps
 3. npm run dev (buat start dev server)

@@ -90,7 +90,7 @@ const WelcomePage = () => {
                         <Grid item>
                             <ButtonMenu
                                 title='Register'
-                                onClick={() => console.log('sign in')}
+                                onClick={() => router.push('/register')}
                                 icon={
                                     <MdOutlineAssignment
                                         style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}

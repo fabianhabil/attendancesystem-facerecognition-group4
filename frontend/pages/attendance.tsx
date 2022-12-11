@@ -9,7 +9,7 @@ const Home = () => {
     return (
         <>
             <Head>
-                <title>Attendee | Attendance</title>
+                <title>Attendance | Attendee</title>
             </Head>
             <Webcam />
         </>

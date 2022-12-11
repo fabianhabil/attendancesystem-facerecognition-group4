@@ -22,7 +22,7 @@ const LoginPage = () => {
                 alignItems='center'
                 justifyContent='center'
             >
-                <Grid item xs={12} md={'auto'} sx={{ p: 2 }}>
+                <Grid item xs={12} md={'auto'} sm={8} sx={{ p: 2 }}>
                     <Grid container direction='column' spacing={1}>
                         <Grid item container alignItems='center' justifyContent='center'>
                             <img

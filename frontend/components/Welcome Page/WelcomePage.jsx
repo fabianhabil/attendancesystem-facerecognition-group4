@@ -1,6 +1,7 @@
 import { Button, Grid, Typography } from '@mui/material';
 import { MdOutlineLogin, MdOutlineAssignment } from 'react-icons/md';
 import { FiUserCheck } from 'react-icons/fi';
+import { useRouter } from 'next/router';
 
 const ButtonMenu = ({ title, onClick, icon }) => {
     return (
@@ -34,6 +35,8 @@ const ButtonMenu = ({ title, onClick, icon }) => {
 };
 
 const WelcomePage = () => {
+    const router = useRouter();
+
     return (
         <>
             <Grid container direction='column'>
@@ -75,7 +78,7 @@ const WelcomePage = () => {
                         <Grid item>
                             <ButtonMenu
                                 title='Sign in'
-                                onClick={() => console.log('sign in')}
+                                onClick={() => router.push('/login')}
                                 icon={
                                     <MdOutlineLogin
                                         style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}

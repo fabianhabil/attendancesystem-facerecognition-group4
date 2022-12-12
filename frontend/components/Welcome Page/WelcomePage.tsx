@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from '@mui/material';
-import { MdOutlineLogin, MdOutlineAssignment } from 'react-icons/md';
+import { MdOutlineLogin, MdOutlineAssignment, MdDashboard } from 'react-icons/md';
 import { FiUserCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import type { ReactNode } from 'react';
@@ -76,6 +76,17 @@ const WelcomePage = () => {
                     sx={{ backgroundColor: '#84A8BF', minHeight: '40vh' }}
                 >
                     <Grid container direction='column' alignItems='center' justifyContent='center' spacing={4}>
+                        <Grid item>
+                            <ButtonMenu
+                                title='Dashboard'
+                                onClick={() => router.push('/dashboard')}
+                                icon={
+                                    <MdDashboard
+                                        style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}
+                                    />
+                                }
+                            />
+                        </Grid>
                         <Grid item>
                             <ButtonMenu
                                 title='Sign in'

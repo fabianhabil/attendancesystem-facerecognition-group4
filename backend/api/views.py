@@ -4,7 +4,8 @@ from rest_framework.parsers import JSONParser
 from .models import User
 from .serializers import UserSerializer
 import json
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 @api_view(['POST'])
 def initiallize(request):
@@ -24,9 +25,9 @@ def get(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def testing_post(request):
-    # body = json.loads(request.body)
-    # print(body)
-    # print(body["Nama"])
-    print(request.POST)
+    body = json.loads(request.body)
+    print(body["test"])
+    # print(request.POST)
     return Response({'response': "mantap"})

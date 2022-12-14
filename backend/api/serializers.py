@@ -37,8 +37,7 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class RegisterSerializer(UserSerializer):
-    email = serializers.EmailField(
-    )
+    email = serializers.EmailField()
     password = serializers.CharField()
     fullname = serializers.CharField()
     classes = serializers.CharField()

@@ -2,7 +2,7 @@ import { Grid, Toolbar, Drawer } from '@mui/material';
 import React from 'react';
 import SidebarButton from './SidebarButton/SidebarButton';
 import Link from 'next/link';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+// import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import type { ReactNode } from 'react';
@@ -24,12 +24,12 @@ const menu: menuProps[] = [
         href: '/dashboard',
         admin: false
     },
-    {
-        name: 'Schedule',
-        icon: <CalendarMonthIcon sx={{ fontSize: '32px', verticalAlign: 'middle' }} />,
-        href: '/schedule',
-        admin: false
-    },
+    // {
+    //     name: 'Schedule',
+    //     icon: <CalendarMonthIcon sx={{ fontSize: '32px', verticalAlign: 'middle' }} />,
+    //     href: '/schedule',
+    //     admin: false
+    // },
     {
         name: 'Attendance',
         icon: <Groups2Icon sx={{ fontSize: '32px', verticalAlign: 'middle' }} />,
@@ -76,7 +76,7 @@ const Sidebar = () => {
                             '&:hover': {
                                 cursor: 'pointer'
                             },
-                            backgroundColor: '#84A8BF',
+                            backgroundColor: '#244350',
                             mb: 2
                         }}
                     >
@@ -89,7 +89,7 @@ const Sidebar = () => {
                                         style={{
                                             maxWidth: '170px',
                                             width: '100%',
-                                            maxHeight: '100px',
+                                            maxHeight: '75px',
                                             height: '100%'
                                         }}
                                     />

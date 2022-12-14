@@ -40,12 +40,12 @@ const SidebarButton: React.FC<Props> = ({ name, icon, href, subPage, admin }) =>
                 routerName = `${routerName}/${router.pathname.split('/')[2]}`;
             }
             if (routerName === href) {
-                return '#537E9D';
+                return '#244350';
             } else {
                 return '';
             }
         } else if (routerName === href) {
-            return '#537E9D';
+            return '#244350';
         } else {
             return '';
         }
@@ -57,14 +57,14 @@ const SidebarButton: React.FC<Props> = ({ name, icon, href, subPage, admin }) =>
                 routerName = `${routerName}/${router.pathname.split('/')[2]}`;
             }
             if (routerName === href) {
-                return 'rgba(83,126,157,0.8)';
+                return 'rgba(36,67,80,0.8)';
             } else {
-                return 'rgba(83,126,157,0.8)';
+                return 'rgba(36,67,80,0.8)';
             }
         } else if (routerName === href) {
-            return 'rgba(83,126,157,0.8)';
+            return 'rgba(36,67,80,0.8)';
         } else {
-            return 'rgba(83,126,157,0.8)';
+            return 'rgba(36,67,80,0.8)';
         }
     };
 

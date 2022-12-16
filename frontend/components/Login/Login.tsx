@@ -1,18 +1,53 @@
 import { Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import EmailIcon from '@mui/icons-material/Email';
 import { Button, Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { textFieldStyles } from '../Micros/Textfield/Textfield';
+import ToastError from '../Toast/ToastError';
+import ToastSuccess from '../Toast/ToastSuccess';
+import { useRouter } from 'next/router';
 
 const LoginPage = () => {
     const styles = textFieldStyles();
-    const [login, setLogin] = useState({
-        query: '',
+    const [login, setLogin] = useState<{ email: string; password: string }>({
+        email: '',
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
     const handleClickPassword = () => setShowPassword(!showPassword);
+    const router = useRouter();
+
+    const loginAccount = async () => {
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login/`, login);
+            if (response) {
+                console.log(response);
+                localStorage.setItem('data', JSON.stringify(response.data.user));
+                ToastSuccess('Login Success!');
+                router.push('/');
+            }
+        } catch (e: any) {
+            console.log(e);
+            if (e.response.status === 401) {
+                ToastError('Invalid Email or Password!');
+            } else {
+                ToastError('Server Error!');
+            }
+        }
+    };
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('data') as string);
+        if (data) {
+            const notice = 'Already Logged in!';
+            ToastError(notice);
+            setTimeout(() => {
+                router.push('/');
+            }, 500);
+        }
+    }, []);
 
     return (
         <>
@@ -55,21 +90,21 @@ const LoginPage = () => {
                                     }
                                     variant='outlined'
                                     onChange={(e) => {
-                                        setLogin({ ...login, query: e.target.value });
+                                        setLogin({ ...login, email: e.target.value });
                                     }}
                                     InputLabelProps={{
                                         style: { color: '#0D4066', borderColor: 'white', fontWeight: 'bold' }
                                     }}
                                     onKeyPress={(e) => {
                                         if (e.which === 13) {
-                                            // loginAccount(login);
+                                            loginAccount();
                                         }
                                     }}
                                     className={styles.inputTextfield}
                                     sx={{
                                         input: { color: '#0D4066', fontWeight: 'bold' },
                                         '& label': {
-                                            opacity: !login.query ? 1 : 0,
+                                            opacity: !login.email ? 1 : 0,
                                             '&.Mui-focused': {
                                                 opacity: 0,
                                                 display: 'none'
@@ -100,7 +135,7 @@ const LoginPage = () => {
                                     }}
                                     onKeyPress={(e) => {
                                         if (e.which === 13) {
-                                            // loginAccount(login);
+                                            loginAccount();
                                         }
                                     }}
                                     onChange={(e) => {
@@ -136,9 +171,7 @@ const LoginPage = () => {
                                             backgroundColor: 'rgba(132,168,191,0.7)'
                                         }
                                     }}
-                                    onClick={() => {
-                                        // loginAccount(login);
-                                    }}
+                                    onClick={loginAccount}
                                 >
                                     <Typography sx={{ fontSize: '20px', fontWeight: 600, color: 'white' }}>
                                         Login

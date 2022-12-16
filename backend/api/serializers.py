@@ -12,10 +12,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'fullname', 'classes', 'semester', 'age', 'imagepath', 'created',
-                  'email', 'is_superuser', 'last_login', 'is_active', 'is_staff']
+        fields = ['id', 'fullname', 'nim', 'created',
+                  'email', 'is_superuser', 'last_login', 'is_active', 'is_staff', 'haveModel']
         read_only_field = ['is_active', 'created',
-                           'is_superuser', 'last_login', 'is_staff']
+                           'is_superuser', 'last_login', 'is_staff', 'haveModel']
 
 
 # -------------------------------------------------------------------------------------
@@ -37,30 +37,26 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class RegisterSerializer(UserSerializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     password = serializers.CharField()
     fullname = serializers.CharField()
-    classes = serializers.CharField()
-    semester = serializers.IntegerField()
-    age = serializers.IntegerField()
-    imagepath = serializers.CharField()
+    nim = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())])
     created = serializers.DateTimeField(required=False)
     is_active = serializers.BooleanField(required=False)
     is_staff = serializers.BooleanField(required=False)
 
     class Meta:
         model = User
-        fields = ['id', 'fullname', 'classes', 'semester', 'age', 'imagepath', 'created',
-                  'email', 'is_superuser', 'last_login', 'is_active', 'is_staff', 'password']
+        fields = ['id', 'fullname', 'created', "nim", "haveModel", 'email',
+                  'is_superuser', 'last_login', 'is_active', 'is_staff', 'password']
 
     def create(self, validated_data):
         try:
             user = User.objects.get(email=validated_data['email'])
-            if user:
-                res = serializers.ValidationError(
-                    {'Duplicate': 'Email Address'})
-                res.status_code = 409
-                raise res
+            userEmail = User.objects.get(nim=validated_data['nim'])
         except ObjectDoesNotExist:
             user = User.objects.create_user(**validated_data)
-        return user
+            return user

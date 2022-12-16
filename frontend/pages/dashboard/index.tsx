@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React from 'react';
+import Dashboard from '../../components/Dashboard/Dashboard';
 import Layout from '../../components/Layout/Layout/Layout';
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
             <Head>
                 <title>Dashboard | Attendee</title>
             </Head>
+            <Dashboard />
         </>
     );
 };

@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import { MdOutlineLogin, MdOutlineAssignment, MdDashboard } from 'react-icons/md';
 import { FiUserCheck } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import type { ReactNode } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { resetUserInfo, updateUserInfo } from '../../features/userInfo/userInfoSlice';
 
 const ButtonMenu = ({ title, onClick, icon }: { title: string; onClick: () => void; icon: ReactNode }) => {
     return (
@@ -37,6 +40,20 @@ const ButtonMenu = ({ title, onClick, icon }: { title: string; onClick: () => vo
 
 const WelcomePage = () => {
     const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(true);
+    const [loggedIn, setLoggedIn] = useState<boolean>(false);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('data') as string);
+        if (data) {
+            dispatch(updateUserInfo({ data }));
+            setLoggedIn(() => true);
+        } else {
+            dispatch(resetUserInfo());
+        }
+        setLoading(() => false);
+    }, [dispatch]);
 
     return (
         <>
@@ -76,50 +93,85 @@ const WelcomePage = () => {
                     sx={{ backgroundColor: '#84A8BF', minHeight: '40vh' }}
                 >
                     <Grid container direction='column' alignItems='center' justifyContent='center' spacing={4}>
-                        <Grid item>
-                            <ButtonMenu
-                                title='Dashboard'
-                                onClick={() => router.push('/dashboard')}
-                                icon={
-                                    <MdDashboard
-                                        style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}
+                        {loading ? (
+                            <>
+                                <Grid item>
+                                    <img alt='loading' src='/loading/loading.svg' />
+                                </Grid>
+                            </>
+                        ) : (
+                            <>
+                                {loggedIn ? (
+                                    <Grid item>
+                                        <ButtonMenu
+                                            title='Dashboard'
+                                            onClick={() => router.push('/dashboard')}
+                                            icon={
+                                                <MdDashboard
+                                                    style={{
+                                                        color: 'black',
+                                                        marginRight: 4,
+                                                        fontSize: '20px',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                />
+                                            }
+                                        />
+                                    </Grid>
+                                ) : (
+                                    <>
+                                        <Grid item>
+                                            <ButtonMenu
+                                                title='Sign in'
+                                                onClick={() => router.push('/login')}
+                                                icon={
+                                                    <MdOutlineLogin
+                                                        style={{
+                                                            color: 'black',
+                                                            marginRight: 4,
+                                                            fontSize: '20px',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    />
+                                                }
+                                            />
+                                        </Grid>
+                                        <Grid item>
+                                            <ButtonMenu
+                                                title='Register'
+                                                onClick={() => router.push('/register')}
+                                                icon={
+                                                    <MdOutlineAssignment
+                                                        style={{
+                                                            color: 'black',
+                                                            marginRight: 4,
+                                                            fontSize: '20px',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    />
+                                                }
+                                            />
+                                        </Grid>
+                                    </>
+                                )}
+                                <Grid item>
+                                    <ButtonMenu
+                                        title='Attendance'
+                                        onClick={() => router.push('/attendance')}
+                                        icon={
+                                            <FiUserCheck
+                                                style={{
+                                                    color: 'black',
+                                                    marginRight: 4,
+                                                    fontSize: '20px',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            />
+                                        }
                                     />
-                                }
-                            />
-                        </Grid>
-                        <Grid item>
-                            <ButtonMenu
-                                title='Sign in'
-                                onClick={() => router.push('/login')}
-                                icon={
-                                    <MdOutlineLogin
-                                        style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}
-                                    />
-                                }
-                            />
-                        </Grid>
-                        <Grid item>
-                            <ButtonMenu
-                                title='Register'
-                                onClick={() => router.push('/register')}
-                                icon={
-                                    <MdOutlineAssignment
-                                        style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}
-                                    />
-                                }
-                            />
-                        </Grid>
-                        <Grid item>
-                            <ButtonMenu
-                                title='Attendance'
-                                onClick={() => router.push('/attendance')}
-                                icon={
-                                    <FiUserCheck
-                                        style={{ color: 'black', marginRight: 4, fontSize: '20px', fontWeight: 'bold' }}
-                                    />
-                                }
-                            />
-                        </Grid>
+                                </Grid>
+                            </>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>

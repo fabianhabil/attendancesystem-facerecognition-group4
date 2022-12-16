@@ -38,20 +38,32 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=50, unique=True, default='Email')
     password = models.CharField(
         max_length=100, blank=False, null=False, default="password")
-    fullname = models.CharField(max_length=100)
-    classes = models.CharField(max_length=50, null=True)
-    semester = models.IntegerField(null=True)
-    age = models.IntegerField(null=True)
-    imagepath = models.CharField(max_length=200, null=True)
+    fullname = models.CharField(max_length=100, null=False, default="password")
+    nim = models.CharField(max_length=100, null=False, default="password")
+    haveModel = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True, null=True)
     is_staff = models.BooleanField(default=False, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password', 'fullname',
-                       'classes', 'semester', 'age', 'imagepath', 'created']
+                       'nim']
 
     objects = UserManager()
 
     def __str__(self):
         return f"{self.email}"
+
+    def __str__(self):
+        return f"{self.id}"
+
+
+class Image(models.Model):
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to=f'models/', null=True)
+
+
+class ImageAbsent(models.Model):
+    name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='tempimages/')

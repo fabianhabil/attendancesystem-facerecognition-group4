@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
-const Webcam = dynamic(() => import('../components/Webcam/Webcam'), {
+const TakeAttendance = dynamic(() => import('../components/Take Attendance/TakeAttendance'), {
     ssr: false
 });
 
@@ -11,7 +11,7 @@ const Home = () => {
             <Head>
                 <title>Attendance | Attendee</title>
             </Head>
-            <Webcam />
+            <TakeAttendance />
         </>
     );
 };

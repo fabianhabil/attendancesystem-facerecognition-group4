@@ -2,21 +2,34 @@ import { Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import EmailIcon from '@mui/icons-material/Email';
 import { Button, FormHelperText, Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { textFieldStyles } from '../Micros/Textfield/Textfield';
 import { FaIdCard } from 'react-icons/fa';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import ToastError from '../Toast/ToastError';
+import axios from 'axios';
+import ToastSuccess from '../Toast/ToastSuccess';
+import { useRouter } from 'next/router';
 
 const RegisterPage = () => {
     const styles = textFieldStyles();
-    const [register, setRegister] = useState<{ query: string; password: string; confirmPassword: string; id: string }>({
-        query: '',
+    const [register, setRegister] = useState<{
+        email: string;
+        password: string;
+        confirmPassword: string;
+        nim: string;
+        fullname: string;
+    }>({
+        email: '',
         password: '',
         confirmPassword: '',
-        id: ''
+        nim: '',
+        fullname: ''
     });
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showPassword2, setShowPassword2] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
+    const router = useRouter();
 
     const validateEmail = (email: string) => {
         const re =
@@ -27,13 +40,47 @@ const RegisterPage = () => {
     const handleClickPassword = () => setShowPassword(!showPassword);
     const handleClickPassword2 = () => setShowPassword2(!showPassword2);
 
-    const registerAccount = () => {
-        if (validateEmail(register.query) && register.password === register.confirmPassword) {
+    const registerAccount = async () => {
+        if (
+            validateEmail(register.email) &&
+            register.password === register.confirmPassword &&
+            register.nim !== '' &&
+            register.fullname !== ''
+        ) {
             setError(false);
+            try {
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/`, register);
+                if (response) {
+                    console.log(response);
+                    ToastSuccess('Register Berhasil!');
+                    router.push('/');
+                }
+            } catch (e: any) {
+                console.log(e);
+                if (e.response.status === 400) {
+                    if (e.response.data.email) {
+                        ToastError('Email Registered! Please use another Email');
+                    }
+                    if (e.response.data.nim) {
+                        ToastError('NIM Registered! Please use another NIM');
+                    }
+                }
+            }
         } else {
             setError(true);
         }
     };
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('data') as string);
+        if (data) {
+            const notice = 'Already Logged in!';
+            ToastError(notice);
+            setTimeout(() => {
+                router.push('/');
+            }, 500);
+        }
+    }, []);
 
     return (
         <>
@@ -71,12 +118,12 @@ const RegisterPage = () => {
                                     fullWidth
                                     label={
                                         <>
-                                            <EmailIcon sx={{ fontSize: '24px', mr: '8px' }} /> {' Email Address'}
+                                            <AccountBoxIcon sx={{ fontSize: '24px', mr: '8px' }} /> {' Full Name'}
                                         </>
                                     }
                                     variant='outlined'
                                     onChange={(e) => {
-                                        setRegister({ ...register, query: e.target.value });
+                                        setRegister({ ...register, fullname: e.target.value });
                                     }}
                                     InputLabelProps={{
                                         style: { color: '#0D4066', borderColor: 'white', fontWeight: 'bold' }
@@ -86,12 +133,50 @@ const RegisterPage = () => {
                                             // registerAccount(register);
                                         }
                                     }}
-                                    error={error && !validateEmail(register.query)}
+                                    error={error && register.fullname === ''}
                                     className={styles.inputTextfield}
                                     sx={{
                                         input: { color: '#0D4066', fontWeight: 'bold' },
                                         '& label': {
-                                            opacity: !register.query ? 1 : 0,
+                                            opacity: !register.fullname ? 1 : 0,
+                                            '&.Mui-focused': {
+                                                opacity: 0,
+                                                display: 'none'
+                                            }
+                                        }
+                                    }}
+                                    aria-describedby='fullname'
+                                />
+                                <FormHelperText id='fullname' sx={{ color: 'red', ml: 1.5 }}>
+                                    {error && register.fullname === '' ? 'Fullname cannot be empty!' : ''}
+                                </FormHelperText>
+                            </Grid>
+                            <Grid item>
+                                <TextField
+                                    fullWidth
+                                    label={
+                                        <>
+                                            <EmailIcon sx={{ fontSize: '24px', mr: '8px' }} /> {' Email Address'}
+                                        </>
+                                    }
+                                    variant='outlined'
+                                    onChange={(e) => {
+                                        setRegister({ ...register, email: e.target.value });
+                                    }}
+                                    InputLabelProps={{
+                                        style: { color: '#0D4066', borderColor: 'white', fontWeight: 'bold' }
+                                    }}
+                                    onKeyPress={(e) => {
+                                        if (e.which === 13) {
+                                            // registerAccount(register);
+                                        }
+                                    }}
+                                    error={error && !validateEmail(register.email)}
+                                    className={styles.inputTextfield}
+                                    sx={{
+                                        input: { color: '#0D4066', fontWeight: 'bold' },
+                                        '& label': {
+                                            opacity: !register.email ? 1 : 0,
                                             '&.Mui-focused': {
                                                 opacity: 0,
                                                 display: 'none'
@@ -101,7 +186,7 @@ const RegisterPage = () => {
                                     aria-describedby='email'
                                 />
                                 <FormHelperText id='email' sx={{ color: 'red', ml: 1.5 }}>
-                                    {error && !validateEmail(register.query) ? 'Format Email not correct!' : ''}
+                                    {error && !validateEmail(register.email) ? 'Format Email not correct!' : ''}
                                 </FormHelperText>
                             </Grid>
                             <Grid item>
@@ -115,7 +200,7 @@ const RegisterPage = () => {
                                     }
                                     variant='outlined'
                                     onChange={(e) => {
-                                        setRegister({ ...register, id: e.target.value });
+                                        setRegister({ ...register, nim: e.target.value });
                                     }}
                                     InputLabelProps={{
                                         style: { color: '#0D4066', borderColor: 'white', fontWeight: 'bold' }
@@ -125,11 +210,12 @@ const RegisterPage = () => {
                                             // registerAccount(register);
                                         }
                                     }}
+                                    error={error && register.nim === ''}
                                     className={styles.inputTextfield}
                                     sx={{
                                         input: { color: '#0D4066', fontWeight: 'bold' },
                                         '& label': {
-                                            opacity: !register.id ? 1 : 0,
+                                            opacity: !register.nim ? 1 : 0,
                                             '&.Mui-focused': {
                                                 opacity: 0,
                                                 display: 'none'
@@ -137,6 +223,9 @@ const RegisterPage = () => {
                                         }
                                     }}
                                 />
+                                <FormHelperText id='nim' sx={{ color: 'red', ml: 1.5 }}>
+                                    {error && register.nim === '' ? 'NIM cannot be empty!' : ''}
+                                </FormHelperText>
                             </Grid>
                             <Grid item>
                                 <TextField

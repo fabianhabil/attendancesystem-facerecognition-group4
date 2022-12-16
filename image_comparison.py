@@ -18,5 +18,3 @@ jsonFile = json.load(f)
 result = face_recognition.compare_faces(
     [img_encoding], np.array(jsonFile["id2"]))
 print("Result: ", result[0])
-
-cv2.waitKey(0)

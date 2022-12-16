@@ -1,5 +1,4 @@
 import {
-    Toolbar,
     AppBar,
     Grid,
     ThemeProvider,
@@ -7,23 +6,30 @@ import {
     Menu,
     MenuItem,
     IconButton,
-    Typography
+    Typography,
+    Container
 } from '@mui/material';
 import theme from '../../../theme/theme';
+import { useDispatch, useSelector } from 'react-redux';
 // import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import React, { useState } from 'react';
 // import SideBarContent from '../../../molecules/layout/sidebar/sidebar';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Sidebar from '../Sidebar/Sidebar';
-// import { useSelector, useDispatch } from 'react-redux';
+import { resetUserInfo } from '../../../features/userInfo/userInfoSlice';
 // import Link from 'next/link';
+import { useRouter } from 'next/router';
+import ToastSuccess from '../../Toast/ToastSuccess';
+import type { globalState } from '../../../types/redux/redux-type';
 
 const Navbar = () => {
     const [drawer, setDrawer] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    // const [openModal, setOpenModal] = useState(false);
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const userInfo = useSelector((state: globalState) => state.userInfo);
 
     const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -31,6 +37,13 @@ const Navbar = () => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
+    };
+
+    const logout = () => {
+        localStorage.removeItem('data');
+        dispatch(resetUserInfo());
+        router.push('/');
+        ToastSuccess('Logout Success!');
     };
 
     return (
@@ -42,12 +55,11 @@ const Navbar = () => {
                     sx={{
                         backgroundColor: 'white',
                         color: 'black',
-                        py: 1,
                         // borderBottom: '2px solid #D9D9D9',
                         mb: 2
                     }}
                 >
-                    <Toolbar>
+                    <Container maxWidth='xl' sx={{ py: 2 }}>
                         <Grid container direction='row-reverse' alignItems='center' justifyContent='space-between'>
                             <Grid
                                 item
@@ -127,17 +139,15 @@ const Navbar = () => {
                             <Grid
                                 item
                                 sx={{
-                                    '@media (max-width: 415px)': {
-                                        display: 'none'
-                                    }
+                                    display: { md: 'flex', xl: 'flex', sm: 'none', xs: 'none' }
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '42px', color: '#0D4066' }}>
-                                    Welcome Back!
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '34px', color: '#0D4066', ml: -1 }}>
+                                    Welcome Back{userInfo.fullname ? `, ${userInfo.fullname}` : null}
                                 </Typography>
                             </Grid>
                         </Grid>
-                    </Toolbar>
+                    </Container>
                 </AppBar>
 
                 {/* Drawer mobile */}
@@ -165,17 +175,7 @@ const Navbar = () => {
                     >
                         <MenuItem
                             onClick={() => {
-                                handleCloseMenu();
-                                // setOpenModal(true);
-                            }}
-                        >
-                            Edit Profile
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                // handleCloseMenu();
-                                // dispatch(resetUserInfo());
-                                // logout();
+                                logout();
                             }}
                         >
                             Logout

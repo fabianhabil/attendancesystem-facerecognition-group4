@@ -1,40 +1,40 @@
-import React, { useState } from 'react';
+import type { globalState } from '../../../types/redux/redux-type';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
 import { Grid, Box } from '@mui/material';
 import Main from '../ContentWrapper/ContentWrapper';
-// import { useRouter } from 'next/router';
-// import { useSelector, useDispatch } from 'react-redux';
-// import { resetStepperCreateEvent } from '../../../../features/event/stepper/stepperCreateEvent';
-// import { resetNewEventSlice } from '../../../../features/event/eventInfo/eventInfoSlice';
-// import { updateUserInfo, resetUserInfo } from '../../../../features/userInfo/userInfoSlice';
-// import { updateLoadingPage } from '../../../../features/loading/loadingSlice';
-// import ToastError from '../../../atoms/toast/toasterror/toasterror';
-// import { useAuth } from '../../../../contexts/auth';
-// import type { globalState } from '../../../../types/state/redux-type';
+import { useSelector, useDispatch } from 'react-redux';
+import { resetUserInfo, updateUserInfo } from '../../../features/userInfo/userInfoSlice';
+import { useRouter } from 'next/router';
+import ToastError from '../../Toast/ToastError';
+import type userType from '../../../types/user/user-type';
 
 interface LayoutProps {
     children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-    // const dispatch = useDispatch();
-    // const router = useRouter();
-    // const { checkRole }: any = useAuth();
-    // const { loading } = useSelector((state: globalState) => state.loadingPage);
-    // const { role } = useSelector((state: globalState) => state.userInfo);
-    const [loading, setLoading] = useState<boolean>(false);
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const { loading } = useSelector((state: globalState) => state.loadingPage);
 
-    // useEffect(() => {
-    //     const data = JSON.parse(localStorage.getItem('data') as string);
-    //     console.log(data);
-    //     if (data) {
-    //         dispatch(updateUserInfo({ data }));
-    //     } else {
-    //         dispatch(resetUserInfo());
-    //     }
-    // }, [dispatch]);
+    useEffect(() => {
+        const data: userType = JSON.parse(localStorage.getItem('data') as string);
+        if (data) {
+            if (!data.haveModel) {
+                console.log('gak ada model');
+            }
+            dispatch(updateUserInfo({ data }));
+        } else {
+            dispatch(resetUserInfo());
+            ToastError('Please login first!');
+            setTimeout(() => {
+                router.push('/');
+            }, 500);
+        }
+    }, [dispatch]);
 
     // useEffect(() => {
     //     if (
@@ -101,7 +101,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                             sx={{
                                                 position: 'fixed',
                                                 top: 0,
-                                                left: { md: '240px', sm: '0px', xs: '0px' },
+                                                left: { md: '0%', sm: '0px', xs: '0px', lg: '240px' },
                                                 right: 0,
                                                 minHeight: '92.6vh',
                                                 alignItems: 'center',

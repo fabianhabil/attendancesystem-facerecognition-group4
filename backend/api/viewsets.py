@@ -33,6 +33,8 @@ class UserViewSet(viewsets.ModelViewSet):
         return obj
 
 # Auth
+
+
 class LoginViewSet(ModelViewSet, TokenObtainPairView):
     http_method_names = ['post']
     serializer_class = LoginSerializer
@@ -64,11 +66,12 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
             "access": str(refresh.access_token),
         }
 
-        return Response({
-            "user": serializer.data,
-            "refresh": res["refresh"],
-            "token": res["access"]
-        }, status=status.HTTP_201_CREATED)
+        return Response({"response": "Register Success"}, status=200)
+        # return Response({
+        #     "user": serializer.data,
+        #     "refresh": res["refresh"],
+        #     "token": res["access"]
+        # }, status=status.HTTP_201_CREATED)
 
 
 class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):

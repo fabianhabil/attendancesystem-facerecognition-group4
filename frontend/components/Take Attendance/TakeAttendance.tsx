@@ -67,27 +67,6 @@ const TakeAttendance = () => {
             const imageSrc = webcam.current.getScreenshot();
             await postToServer(b64toBlob(imageSrc, 'absen.jpg'));
         }
-        // setFlash(true);
-        // if (!timerDelay) {
-        //     setTimeout(async () => {
-        //         const imageSrc = webcam.current.getScreenshot({});
-        //         let cropped = '';
-        //         await cropFromCamera(imageSrc, 1).then((canvas: any) => {
-        //             cropped = canvas.toDataURL('image/*');
-        //         });
-        //         dispatch(updateImgSrc(cropped));
-        //     }, 200);
-        // } else {
-        //     // Timeout for flash.
-        //     setTimeout(async () => {
-        //         let cropped = '';
-        //         await cropFromCamera(imageSrc, 1).then((canvas: any) => {
-        //             cropped = canvas.toDataURL('image/*');
-        //         });
-        //         dispatch(pushImgNow(cropped));
-        //         setGetReady(true);
-        //     }, 200);
-        // }
     }, [webcam]);
 
     const detect = async (detector: faceLandmarksDetection.FaceLandmarksDetector) => {
@@ -129,7 +108,6 @@ const TakeAttendance = () => {
                 if (ctx) {
                     predictions.forEach((prediction: Face) => {
                         drawBox(ctx, prediction);
-                        // drawFaceMesh(ctx, prediction);
                     });
                 }
             }

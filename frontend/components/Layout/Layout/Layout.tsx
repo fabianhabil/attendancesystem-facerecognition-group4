@@ -1,5 +1,5 @@
 import type { globalState } from '../../../types/redux/redux-type';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
@@ -23,9 +23,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     useEffect(() => {
         const data: userType = JSON.parse(localStorage.getItem('data') as string);
         if (data) {
-            if (!data.haveModel) {
-                console.log('gak ada model');
-            }
             dispatch(updateUserInfo({ data }));
         } else {
             dispatch(resetUserInfo());

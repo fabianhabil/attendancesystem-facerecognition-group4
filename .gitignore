@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+backend/model.json
+backend/images
+
 # Distribution / packaging
 .Python
 build/

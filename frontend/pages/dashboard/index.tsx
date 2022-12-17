@@ -1,7 +1,11 @@
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React from 'react';
-import Dashboard from '../../components/Dashboard/Dashboard';
 import Layout from '../../components/Layout/Layout/Layout';
+
+const Dashboard = dynamic(() => import('../../components/Dashboard/Dashboard'), {
+    ssr: false
+});
 
 const Home = () => {
     return (

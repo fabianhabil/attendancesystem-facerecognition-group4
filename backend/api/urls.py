@@ -20,6 +20,7 @@ urlpatterns = [
     path('get', views.get),
     path('test', views.testing_post),
     path('recognize', views.recognizeImage),
+    path('savemodel', views.saveModel),
     path('token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify', TokenVerifyView.as_view(), name='token_verify'),

@@ -1,5 +1,5 @@
 import { Box, Button, Grid, Modal, Typography } from '@mui/material';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
 import Webcam from 'react-webcam';
 import axios from 'axios';
@@ -9,69 +9,74 @@ import b64toBlob from '../../hooks/base64toblob';
 import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
-import * as faceMesh from '@mediapipe/face_mesh';
 import type { Face } from '@tensorflow-models/face-landmarks-detection';
+import { useSelector } from 'react-redux';
+import type { globalState } from '../../types/redux/redux-type';
+import ToastInfo from '../Toast/ToastInfo';
 
 const RegisterFace = ({ openModal, setOpenModal }: { openModal: boolean; setOpenModal: (_param: boolean) => void }) => {
     const [openNotice, setOpenNotice] = useState<boolean>(false);
     const webcam = useRef<Webcam>(null);
     const canvas = useRef<HTMLCanvasElement>(null);
     const [detectedFace, setDetectedFace] = useState<Face[]>([]);
-    const [canCapture, setCanCapture] = useState<boolean>(true);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [detected, setDetected] = useState<number>(0);
+    const userId = useSelector((state: globalState) => state.userInfo);
 
     const runDetection = async () => {
         const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
         const detectorConfig = {
             runtime: 'mediapipe',
-            solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@${faceMesh.VERSION}`,
+            solutionPath: '/face_mesh',
             maxFaces: 10
         } as any;
         const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
-        await detect(detector);
+        if (detector) {
+            await detect(detector).then(() => {
+                setLoading(() => false);
+            });
+        }
     };
 
-    useEffect(() => {
-        if (detectedFace.length !== 0 && canCapture) {
-            capture();
-            console.log(detectedFace);
-            setCanCapture(false);
-        }
-    }, [detectedFace]);
-
-    const postToServer = async (image: File) => {
+    const postToServer = async (image: File, detectedTemp: number) => {
         try {
+            ToastInfo('🤖 Saving your face into our database');
             const formData: any = new FormData();
+            formData.append('userId', userId.id);
             formData.append('image', image);
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/recognize`, formData, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/savemodel`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             if (response) {
-                console.log(response);
-                ToastSuccess(`Hello ${response.data.response}`);
-                // setCanCapture(true);
+                if (detectedTemp === 0) {
+                    ToastSuccess('Model saved! Please capture one more photo');
+                    setDetected(1);
+                }
+                if (detectedTemp === 1) {
+                    setOpenModal(false);
+                    setOpenNotice(false);
+                    ToastSuccess('Model Saved');
+                }
             }
         } catch (e: any) {
             console.log(e);
-            if (e.response.status === 404) {
-                ToastError('Face is not registered!');
-            } else if (e.response.status === 400) {
+            if (e.response.status === 400) {
                 ToastError('Please move your face more to the center!');
             }
-            // setCanCapture(true);
         }
     };
 
-    const capture = useCallback(async () => {
+    const capture = async () => {
         if (webcam.current) {
             const imageSrc = webcam.current.getScreenshot();
-            await postToServer(b64toBlob(imageSrc, 'absen.jpg'));
+            const detectedTemp = detected;
+            await postToServer(b64toBlob(imageSrc, `${userId.id}.jpeg`), detectedTemp);
         }
-    }, [webcam]);
+    };
 
     const detect = async (detector: faceLandmarksDetection.FaceLandmarksDetector) => {
         try {
-            setLoading(() => false);
+            if (detector) setLoading(() => false);
             if (webcam.current && canvas.current && detector) {
                 const webcamCurrent = webcam.current as any;
                 const videoWidth = webcamCurrent.video.videoWidth;
@@ -157,7 +162,7 @@ const RegisterFace = ({ openModal, setOpenModal }: { openModal: boolean; setOpen
                     }}
                 >
                     <Grid item>
-                        <Typography sx={{ fontSize: '22px', fontWeight: 500 }}>
+                        <Typography sx={{ fontSize: '22px', fontWeight: 500, textAlign: 'center' }}>
                             Make sure your face is on the center of the camera!
                         </Typography>
                     </Grid>
@@ -182,17 +187,36 @@ const RegisterFace = ({ openModal, setOpenModal }: { openModal: boolean; setOpen
                                 }}
                                 screenshotFormat='image/jpeg'
                             />
-                            <canvas
-                                ref={canvas}
-                                style={{
-                                    position: 'absolute',
-                                    left: '0%',
-                                    textAlign: 'center',
-                                    width: '100%',
-                                    height: '100%'
-                                }}
-                            />
+                            {!loading ? (
+                                <canvas
+                                    ref={canvas}
+                                    style={{
+                                        position: 'absolute',
+                                        left: '0%',
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        height: '100%'
+                                    }}
+                                />
+                            ) : (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        height: '100%',
+                                        top: '45%'
+                                    }}
+                                >
+                                    <img alt='loading' src='/loading/loading.svg' />
+                                </div>
+                            )}
                         </div>
+                    </Grid>
+                    <Grid item>
+                        <Button onClick={capture} disabled={detectedFace.length === 0}>
+                            Capture
+                        </Button>
                     </Grid>
                 </Box>
             </Modal>

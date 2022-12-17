@@ -5,8 +5,9 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
-from ai.main import writeDataSet, recognize
+from ai.main import writeDataSet, recognize, moveModel
 from .forms import *
+from django.http import JsonResponse
 import json
 
 
@@ -44,12 +45,31 @@ def recognizeImage(request):
     if form.is_valid():
         form.save()
         result = recognize()
-        print(result)
         if result == None:
             return Response({"response": "error"}, status=400)
         elif result == "Not Found":
             return Response({"response": "not found"}, status=404)
         else:
-            return Response({"response": result}, status=200)
+            user = User.objects.filter(id=result).values_list('fullname')
+            return JsonResponse({"response": user[0]}, status=200)
+    else:
+        return Response({"response": "error"}, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def saveModel(request):
+    userId = request.POST['userId'][0]
+    form = ImageModelForm(request.POST, request.FILES)
+    if form.is_valid():
+        form.save()
+        valid = moveModel(userId)
+        if valid == True:
+            user = User.objects.get(id=userId)
+            user.haveModel = True
+            user.save()
+            return Response({"response": "berhasil"}, status=200)
+        else:
+            return Response({"response": "error"}, status=400)
     else:
         return Response({"response": "error"}, status=400)

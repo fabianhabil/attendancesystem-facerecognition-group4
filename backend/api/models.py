@@ -52,10 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return f"{self.email}"
-
-    def __str__(self):
-        return f"{self.id}"
+        return f"{self.fullname}"
 
 
 class Image(models.Model):

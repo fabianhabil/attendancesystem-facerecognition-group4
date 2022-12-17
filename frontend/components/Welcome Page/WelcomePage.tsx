@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { resetUserInfo, updateUserInfo } from '../../features/userInfo/userInfoSlice';
+import SchoolIcon from '@mui/icons-material/School';
 
 const ButtonMenu = ({ title, onClick, icon }: { title: string; onClick: () => void; icon: ReactNode }) => {
     return (
@@ -42,11 +43,17 @@ const WelcomePage = () => {
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(true);
     const [loggedIn, setLoggedIn] = useState<boolean>(false);
+    const [lecturer, setLecturer] = useState<boolean>(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
         const data = JSON.parse(localStorage.getItem('data') as string);
         if (data) {
+            if (data.is_superuser === false) {
+                setLecturer(() => false);
+            } else {
+                setLecturer(() => true);
+            }
             dispatch(updateUserInfo({ data }));
             setLoggedIn(() => true);
         } else {
@@ -102,22 +109,43 @@ const WelcomePage = () => {
                         ) : (
                             <>
                                 {loggedIn ? (
-                                    <Grid item>
-                                        <ButtonMenu
-                                            title='Dashboard'
-                                            onClick={() => router.push('/dashboard')}
-                                            icon={
-                                                <MdDashboard
-                                                    style={{
-                                                        color: 'black',
-                                                        marginRight: 4,
-                                                        fontSize: '20px',
-                                                        fontWeight: 'bold'
-                                                    }}
+                                    <>
+                                        {lecturer ? (
+                                            <Grid item>
+                                                <ButtonMenu
+                                                    title='Lecture'
+                                                    onClick={() => router.push('/lecturer')}
+                                                    icon={
+                                                        <SchoolIcon
+                                                            style={{
+                                                                color: 'black',
+                                                                marginRight: 4,
+                                                                fontSize: '20px',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        />
+                                                    }
                                                 />
-                                            }
-                                        />
-                                    </Grid>
+                                            </Grid>
+                                        ) : (
+                                            <Grid item>
+                                                <ButtonMenu
+                                                    title='Dashboard'
+                                                    onClick={() => router.push('/dashboard')}
+                                                    icon={
+                                                        <MdDashboard
+                                                            style={{
+                                                                color: 'black',
+                                                                marginRight: 4,
+                                                                fontSize: '20px',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        />
+                                                    }
+                                                />
+                                            </Grid>
+                                        )}
+                                    </>
                                 ) : (
                                     <>
                                         <Grid item>

@@ -13,6 +13,7 @@ import type { Face } from '@tensorflow-models/face-landmarks-detection';
 import { useSelector } from 'react-redux';
 import type { globalState } from '../../types/redux/redux-type';
 import ToastInfo from '../Toast/ToastInfo';
+import type userType from '../../types/user/user-type';
 
 const RegisterFace = ({ openModal, setOpenModal }: { openModal: boolean; setOpenModal: (_param: boolean) => void }) => {
     const [openNotice, setOpenNotice] = useState<boolean>(false);
@@ -56,6 +57,11 @@ const RegisterFace = ({ openModal, setOpenModal }: { openModal: boolean; setOpen
                     setOpenModal(false);
                     setOpenNotice(false);
                     ToastSuccess('Model Saved');
+                    const data: userType = JSON.parse(localStorage.getItem('data') as string);
+                    if (data) {
+                        const newData = { ...data, haveModel: true };
+                        localStorage.setItem('data', JSON.stringify(newData));
+                    }
                 }
             }
         } catch (e: any) {

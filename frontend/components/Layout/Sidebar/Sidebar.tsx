@@ -6,9 +6,9 @@ import Link from 'next/link';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import type { ReactNode } from 'react';
+import SchoolIcon from '@mui/icons-material/School';
 
 const drawerWidth = 240;
-
 interface menuProps {
     name: string;
     icon?: ReactNode;
@@ -35,6 +35,12 @@ const menu: menuProps[] = [
         icon: <Groups2Icon sx={{ fontSize: '32px', verticalAlign: 'middle' }} />,
         href: '/attendance',
         admin: false
+    },
+    {
+        name: 'Lecturer',
+        icon: <SchoolIcon sx={{ fontSize: '32px', verticalAlign: 'middle' }} />,
+        href: '/lecturer',
+        admin: true
     }
 ];
 

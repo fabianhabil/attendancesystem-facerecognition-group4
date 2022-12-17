@@ -38,6 +38,9 @@ def writeDataSet():
 def recognize():
     try:
         jsonFile = openJson()
+        if jsonFile == None:
+            os.remove('./images/tempimages/absen.jpeg')
+            return "Not Found"
         img = cv2.imread('./images/tempimages/absen.jpeg')
         rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         imgEncoding = face_recognition.face_encodings(rgb_img)[0]

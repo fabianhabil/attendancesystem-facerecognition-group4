@@ -6,7 +6,7 @@ const ToastSuccess = (content: string | undefined | null) => {
         setTimeout(() => {
             toast.success(message, {
                 position: 'top-right',
-                autoClose: 3000,
+                autoClose: 1500,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,

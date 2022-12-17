@@ -32,6 +32,8 @@ const LoginPage = () => {
             console.log(e);
             if (e.response.status === 401) {
                 ToastError('Invalid Email or Password!');
+            } else if (e.response.status === 400) {
+                ToastError('Email and Password cannot be empty!');
             } else {
                 ToastError('Server Error!');
             }
@@ -206,22 +208,6 @@ const LoginPage = () => {
                                             }}
                                         >
                                             Don't have an account?
-                                        </Typography>
-                                    </Link>
-                                </Grid>
-                                <Grid item>
-                                    <Link href='/forgot'>
-                                        <Typography
-                                            sx={{
-                                                fontSize: '14px',
-                                                textAlign: 'center',
-                                                '&:hover': {
-                                                    cursor: 'pointer',
-                                                    color: 'gray'
-                                                }
-                                            }}
-                                        >
-                                            Forgot your password?
                                         </Typography>
                                     </Link>
                                 </Grid>

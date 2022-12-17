@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import theme from '../../../../theme/theme';
 import { useSelector } from 'react-redux';
 import type { ReactNode } from 'react';
+import type userType from '../../../../types/user/user-type';
 
 interface Props {
     name: string;
@@ -20,19 +21,18 @@ interface Props {
 const SidebarButton: React.FC<Props> = ({ name, icon, href, subPage, admin }) => {
     const router = useRouter();
     let routerName = `/${router.pathname.split('/')[1]}`;
-    const [render, setRender] = useState(true);
+    const [isAdmin, setAdmin] = useState(false);
 
-    // useEffect(() => {
-    //     if (admin === true) {
-    //         if (role >= 1) {
-    //             setRender(true);
-    //         } else {
-    //             setRender(false);
-    //         }
-    //     } else {
-    //         setRender(true);
-    //     }
-    // }, [admin, role]);
+    useEffect(() => {
+        const data: userType = JSON.parse(localStorage.getItem('data') as string);
+        if (data) {
+            if (data.is_superuser === false) {
+                setAdmin(false);
+            } else {
+                setAdmin(true);
+            }
+        }
+    }, []);
 
     const checkRouteBg = () => {
         if (subPage) {
@@ -102,6 +102,16 @@ const SidebarButton: React.FC<Props> = ({ name, icon, href, subPage, admin }) =>
         }
     };
 
+    const checkRender = () => {
+        if (admin) {
+            if (isAdmin) return true;
+            else return false;
+        } else {
+            if (!isAdmin) return true;
+            else return false;
+        }
+    };
+
     return (
         <>
             <ThemeProvider theme={theme}>
@@ -115,8 +125,7 @@ const SidebarButton: React.FC<Props> = ({ name, icon, href, subPage, admin }) =>
                             '&:hover': {
                                 backgroundColor: checkRouteBgHover()
                             },
-                            display: render ? '' : 'none',
-                            fontWeight: 'bold',
+                            display: checkRender() ? '' : 'none',
                             borderRadius: '0px 24px 24px 0px'
                         }}
                     >

@@ -1,16 +1,6 @@
-import {
-    AppBar,
-    Grid,
-    ThemeProvider,
-    SwipeableDrawer,
-    Menu,
-    MenuItem,
-    IconButton,
-    Typography,
-    Container
-} from '@mui/material';
+import { AppBar, Grid, ThemeProvider, SwipeableDrawer, Menu, MenuItem, IconButton, Container, Toolbar } from '@mui/material';
 import theme from '../../../theme/theme';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 // import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import React, { useState } from 'react';
@@ -21,7 +11,6 @@ import { resetUserInfo } from '../../../features/userInfo/userInfoSlice';
 // import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ToastSuccess from '../../Toast/ToastSuccess';
-import type { globalState } from '../../../types/redux/redux-type';
 
 const Navbar = () => {
     const [drawer, setDrawer] = useState(false);
@@ -29,7 +18,6 @@ const Navbar = () => {
     const open = Boolean(anchorEl);
     const dispatch = useDispatch();
     const router = useRouter();
-    const userInfo = useSelector((state: globalState) => state.userInfo);
 
     const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -59,7 +47,7 @@ const Navbar = () => {
                         mb: 2
                     }}
                 >
-                    <Container maxWidth='xl' sx={{ py: 2 }}>
+                    <Toolbar>
                         <Grid container direction='row-reverse' alignItems='center' justifyContent='space-between'>
                             <Grid
                                 item
@@ -136,18 +124,8 @@ const Navbar = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid
-                                item
-                                sx={{
-                                    display: { md: 'flex', xl: 'flex', sm: 'none', xs: 'none' }
-                                }}
-                            >
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '34px', color: '#0D4066', ml: -1 }}>
-                                    Welcome Back{userInfo.fullname ? `, ${userInfo.fullname}` : null}
-                                </Typography>
-                            </Grid>
                         </Grid>
-                    </Container>
+                    </Toolbar>
                 </AppBar>
 
                 {/* Drawer mobile */}

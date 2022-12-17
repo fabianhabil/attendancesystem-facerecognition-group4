@@ -7,7 +7,7 @@ interface userType {
     is_active: boolean;
     is_staff: boolean;
     is_superuser: boolean;
-    haveModel: number;
+    haveModel: boolean;
 }
 
 export default userType;

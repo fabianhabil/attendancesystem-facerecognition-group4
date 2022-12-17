@@ -4,7 +4,7 @@ from rest_framework_simplejwt.settings import api_settings
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.validators import UniqueValidator
-from .models import User
+from .models import User, Attendance
 from rest_framework import status
 
 
@@ -60,3 +60,11 @@ class RegisterSerializer(UserSerializer):
         except ObjectDoesNotExist:
             user = User.objects.create_user(**validated_data)
             return user
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Attendance
+        fields = ['id', 'userId', 'courseId', 'time']
+        depth = 1

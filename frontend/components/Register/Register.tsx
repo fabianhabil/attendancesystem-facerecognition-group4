@@ -384,22 +384,6 @@ const RegisterPage = () => {
                                         </Typography>
                                     </Link>
                                 </Grid>
-                                <Grid item>
-                                    <Link href='/forgot'>
-                                        <Typography
-                                            sx={{
-                                                fontSize: '14px',
-                                                textAlign: 'center',
-                                                '&:hover': {
-                                                    cursor: 'pointer',
-                                                    color: 'gray'
-                                                }
-                                            }}
-                                        >
-                                            Forgot your password?
-                                        </Typography>
-                                    </Link>
-                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>

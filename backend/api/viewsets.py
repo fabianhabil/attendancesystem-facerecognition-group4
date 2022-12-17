@@ -1,5 +1,5 @@
-from .serializers import UserSerializer, LoginSerializer, RegisterSerializer
-from .models import User
+from .serializers import UserSerializer, LoginSerializer, RegisterSerializer, AttendanceSerializer
+from .models import User, Attendance
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import filters
@@ -87,3 +87,24 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
             raise InvalidToken(e.args[0])
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    serializer_class = AttendanceSerializer
+
+    def get_queryset(self):
+        attendance = Attendance.objects.all()
+        return attendance
+
+    def retrieve(self, request, *args, **kwargs):
+        # Kiri userId, kanan courseId
+        # kalo gak ada 0
+        params = kwargs
+        params_list = params['pk'].split('-')
+        query = Attendance.objects.filter(
+            userId=params_list[0])
+        if int(params_list[0]) == 0:
+            query = Attendance.objects.filter(
+                courseId=params_list[1])
+        serializer = AttendanceSerializer(query, many=True)
+        return Response(serializer.data)

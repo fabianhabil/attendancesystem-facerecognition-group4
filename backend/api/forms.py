@@ -14,3 +14,17 @@ class ImageModelForm(forms.ModelForm):
     class Meta:
         model = Image
         fields = ['image', 'userId']
+
+
+class CourseForm(forms.ModelForm):
+
+    class Meta:
+        model = Course
+        fields = ['name', 'sks']
+
+
+class AttendanceForm(forms.ModelForm):
+
+    class Meta:
+        model = Attendance
+        fields = ['userId', 'courseId']

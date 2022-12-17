@@ -5,4 +5,5 @@ export interface globalState {
         loading: boolean;
     };
     userInfo: userType;
+    attendanceLecture: string;
 }

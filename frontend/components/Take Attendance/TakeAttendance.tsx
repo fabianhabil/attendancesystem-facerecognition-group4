@@ -1,25 +1,27 @@
 import Webcam from 'react-webcam';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import type { Face } from '@tensorflow-models/face-landmarks-detection';
 import b64toBlob from '../../hooks/base64toblob';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Select, Typography } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import axios from 'axios';
 import ToastError from '../Toast/ToastError';
 import ToastSuccess from '../Toast/ToastSuccess';
 import ToastInfo from '../Toast/ToastInfo';
+import { FaClipboardList } from 'react-icons/fa';
 
 const TakeAttendance = () => {
     const webcam = useRef<Webcam>(null);
     const canvas = useRef<HTMLCanvasElement>(null);
     const [detectedFace, setDetectedFace] = useState<Face[]>([]);
-    const [canCapture, setCanCapture] = useState<boolean>(true);
     const [date, setDate] = useState<Date>(new Date());
     const [loading, setLoading] = useState<boolean>(true);
+    const [course, setCourse] = useState<{ id: number; name: string; sks: number }[]>([]);
+    const [selectedCourse, setSelectedCourse] = useState<any>('0');
     const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
     const runDetection = async () => {
         const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
         const detectorConfig = {
@@ -30,29 +32,34 @@ const TakeAttendance = () => {
         const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
         if (detector) {
             await detect(detector).then(() => {
+                getCourse();
                 setLoading(() => false);
             });
         }
     };
 
-    useEffect(() => {
-        if (detectedFace.length !== 0 && canCapture) {
-            capture();
-            setCanCapture(false);
+    const getCourse = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/getCourse`);
+            if (response) setCourse(response.data.course);
+        } catch (e) {
+            console.log(e);
         }
-    }, [detectedFace]);
+    };
 
     const postToServer = async (image: File) => {
         try {
             ToastInfo('🤖 Recognizing your face');
             const formData: any = new FormData();
+            formData.append('courseId', selectedCourse);
             formData.append('image', image);
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/recognize`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             if (response) {
-                console.log(response);
-                ToastSuccess(`Hello ${response.data.response}`);
+                ToastSuccess(
+                    `Hello ${response.data.response}, You successfully attend ${course[selectedCourse - 1].name}`
+                );
                 // setCanCapture(true);
             }
         } catch (e: any) {
@@ -66,12 +73,12 @@ const TakeAttendance = () => {
         }
     };
 
-    const capture = useCallback(async () => {
+    const capture = async () => {
         if (webcam.current) {
             const imageSrc = webcam.current.getScreenshot();
             await postToServer(b64toBlob(imageSrc, 'absen.jpeg'));
         }
-    }, [webcam]);
+    };
 
     const detect = async (detector: faceLandmarksDetection.FaceLandmarksDetector) => {
         try {
@@ -84,7 +91,6 @@ const TakeAttendance = () => {
                 if (webcamCurrent.video.readyState === 4) {
                     const video = webcamCurrent.video;
                     const predictions: Face[] = await detector.estimateFaces(video);
-                    console.log(predictions);
                     setDetectedFace(() => predictions);
                     requestAnimationFrame(() => {
                         draw(predictions);
@@ -243,25 +249,78 @@ const TakeAttendance = () => {
                             </div>
                         </Grid>
                     </Grid>
-                    <Grid item container direction='column' alignItems='center' justifyContent='center'>
+                    <Grid item container direction='column' alignItems='center' justifyContent='center' spacing={2}>
+                        <Grid container direction='column' alignItems='center' justifyContent='center' sx={{ mt: 2 }}>
+                            <Grid item>
+                                <Typography sx={{ fontSize: '32px', fontWeight: 600, color: '#0D4066' }}>
+                                    {`${weekday[date.getDay()]}, `}
+                                    {date.toLocaleDateString('en-GB', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    })}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                <Typography sx={{ fontSize: '32px', fontWeight: 600, color: '#0D4066' }}>
+                                    {date.toLocaleTimeString('it-IT')}
+                                </Typography>
+                            </Grid>
+                        </Grid>
                         <Grid item>
-                            <Typography sx={{ fontSize: '32px', fontWeight: 600, color: '#0D4066' }}>
-                                {`${weekday[date.getDay()]}, `}
-                                {date.toLocaleDateString('en-GB', {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric'
+                            <Select
+                                defaultValue={'0'}
+                                onChange={(e: SelectChangeEvent) => {
+                                    console.log(e.target.value);
+                                    setSelectedCourse(() => e.target.value);
+                                }}
+                                displayEmpty
+                                sx={{
+                                    width: '400px',
+                                    backgroundColor: 'white',
+                                    borderRadius: '36px',
+                                    fontColor: '#0D4066',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                <MenuItem value={'0'}>
+                                    <FaClipboardList
+                                        style={{
+                                            verticalAlign: 'middle',
+                                            fontSize: '20px',
+                                            marginTop: 'auto',
+                                            marginBottom: 'auto',
+                                            marginRight: '4px'
+                                        }}
+                                    />{' '}
+                                    List of class to Attend
+                                </MenuItem>
+                                {course.map((data: { id: number; name: string; sks: number }, index: number) => {
+                                    return (
+                                        <MenuItem value={`${data.id}`} key={index}>
+                                            {data.name}
+                                        </MenuItem>
+                                    );
                                 })}
-                            </Typography>
+                            </Select>
                         </Grid>
                         <Grid item>
-                            <Typography sx={{ fontSize: '32px', fontWeight: 600, color: '#0D4066' }}>
-                                {date.toLocaleTimeString('it-IT')}
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <Button onClick={() => setCanCapture(true)} disabled={detectedFace.length === 0}>
-                                Take Attendance
+                            <Button
+                                onClick={() => capture()}
+                                sx={{
+                                    backgroundColor: '#84A8BF',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(132,168,191,0.7)'
+                                    },
+                                    borderRadius: '16px',
+                                    width: '250px',
+                                    p: 1
+                                }}
+                                disabled={detectedFace.length === 0 || selectedCourse === '0'}
+                            >
+                                Attend
                             </Button>
                         </Grid>
                     </Grid>

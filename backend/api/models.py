@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -64,3 +65,16 @@ class Image(models.Model):
 class ImageAbsent(models.Model):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='tempimages/')
+
+
+class Course(models.Model):
+    name = models.CharField(max_length=50)
+    sks = models.IntegerField()
+
+
+class Attendance(models.Model):
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    courseId = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
+    time = models.DateTimeField(auto_now_add=True, blank=True)
+
+    

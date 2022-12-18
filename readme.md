@@ -7,7 +7,7 @@ pip install requirements.txt
 kalo dlibnya error
 1. error cmake -> pip install cmake kalo gagal
 2. kalo error dlib (windows pasti error) download di sini [Link Install dlib manual](https://github.com/datamagic2020/Install-dlib)
-# Notes buat frontend
+## Notes buat frontend
 1. pastikan sudah punya node js di komputer
 2. npm install --legacy-peer-deps
 3. npm run dev (buat start dev server)

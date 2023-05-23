@@ -1,6 +1,7 @@
 # Video Demonstrasi Program
 [Video Demonstrasi](https://youtu.be/MqMZmHujUQA)
-[Proposal PKM-KC](https://binusianorg-my.sharepoint.com/personal/annisa_arrahmah_binus_ac_id/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fannisa%5Farrahmah%5Fbinus%5Fac%5Fid%2FDocuments%2FCatur%20Darma%2FPkM%20mahasiswa%2FLB75%20AI%2FKelompok%204%20%2D%20Atendee%21%2FAttendee%20%2D%20PKM%20KC%2Epdf&parent=%2Fpersonal%2Fannisa%5Farrahmah%5Fbinus%5Fac%5Fid%2FDocuments%2FCatur%20Darma%2FPkM%20mahasiswa%2FLB75%20AI%2FKelompok%204%20%2D%20Atendee%21)
+<br/>
+[Proposal PKM-KC](https://drive.google.com/file/d/1LEYWWgyC_OhmwU8TkbhL9f2_X9iUsORG/view?usp=sharing)
 # Cara install
 
 ## Installing Modules Backend
